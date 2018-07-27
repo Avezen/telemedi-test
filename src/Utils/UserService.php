@@ -25,7 +25,7 @@ class UserService{
         if($doUserExist !== []){
             return "Konto o podanym loginie już istnieje";
         }
-        if(strlen($registerData->getLogin()) >= 5 || strlen($registerData->getPassword()) >= 5) {
+        if(strlen($registerData->getLogin()) > 5 || strlen($registerData->getPassword()) > 5) {
             if ($registerData->getPassword() === $registerData->getPasswordRepeated()) {
                 $user = new User();
                 $roles = array("0" => "ROLE_USER");
