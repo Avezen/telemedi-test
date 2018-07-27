@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello {{ user }}!{% endblock %}
+
+{% block body %}
+    <div>Welcome {{ user }}</div><a href="{{ path('main_page') }}">Wyloguj się</a>
+    <br>
+
+    {% for role in roles %}
+        {% if "ROLE_ADMIN" in role %}
+            <div id="adminPanel">
+                <a id="manageUsers" href="">Zarządzaj użytkownikami</a>
+                <div id="userList"></div>
+                <div id="responseMsg" style="display: none;"></div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $("#manageUsers").click(function(){
+            getAllUsers();
+            return false;
+        });
+
+        $('#adminPanel').on("click", ".deleteUser", function () {
+            deleteUser(this.id);
+        });
+
+        $('#adminPanel').on("click", ".activateUser", function () {
+            activateUser(this.id);
+        });
+
+        function getAllUsers(){
+            $.ajax({
+                type: "GET",
+                url: "{{ path('get_all_users') }}",
+                success: function(response){
+                    if(response['response'] === "Access denied"){
+                        window.location.replace("{{ path("main_page") }}");
+                    }
+                    var tableHeader = "<table>" +
+                        "<tr>" +
+                        "   <td>Id</td><td>Login</td><td>Username</td><td>Registration date</td><td>Konto aktywne</td><td>Usuń użytkownika</td>" +
+                        "</tr>";
+                    var tableContent = "";
+                    var tableFooter = "</table>";
+                    for(var i=0; i<response.length; i++){
+                        if(response[i]['login'] === "admin"){
+                            tableContent += "<tr>" +
+                                "<td>"+ response[i]['id'] +"</td><td>"+ response[i]['login'] +"</td><td>"+ response[i]['username'] +"</td><td>"+ response[i]['registrationDate'] +"</td><td>"+ response[i]['isActive'] +"<button class='activateUser' id='"+ response[i]['id'] +"' disabled>Aktywj/Dezaktywuj</button></td><td><button class='deleteUser' id='"+ response[i]['id'] +"' disabled>Usuń</button></td>"+
+                                "</tr>";
+                        }else{
+                            tableContent += "<tr>" +
+                                "<td>"+ response[i]['id'] +"</td><td>"+ response[i]['login'] +"</td><td>"+ response[i]['username'] +"</td><td>"+ response[i]['registrationDate'] +"</td><td>"+ response[i]['isActive'] +"<button class='activateUser' id='"+ response[i]['id'] +"'>Aktywj/Dezaktywuj</button></td><td><button class='deleteUser' id='"+ response[i]['id'] +"'>Usuń</button></td>"+
+                                "</tr>";
+                        }
+
+                    }
+                    document.getElementById('userList').innerHTML = tableHeader + tableContent + tableFooter;
+                },
+                error: function(){
+                    window.location.replace("{{ path("main_page") }}");
+                },
+            });
+        }
+
+        function deleteUser(id){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('delete_user') }}",
+                data: JSON.stringify(id),
+                success: function(response){
+                    if(response['response'] === "Access denied"){
+                        window.location.replace("{{ path("main_page") }}");
+                    }
+                    var responseMsg = document.getElementById('responseMsg');
+                    responseMsg.innerHTML = response['response'];
+                    responseMsg.style.display = "block";
+                    getAllUsers();
+                    setTimeout(function(){responseMsg.style.display = "none"},3000)
+                },
+                error: function(){
+                    window.location.replace("{{ path("main_page") }}");
+                },
+                dataType: "json",
+                contentType : "application/json"
+            });
+        }
+
+        function activateUser(id){
+            $.ajax({
+                type: "POST",
+                url: "{{ path('change_user_status') }}",
+                data: JSON.stringify(id),
+                success: function(response){
+                    if(response['response'] === "Access denied"){
+                        window.location.replace("{{ path("main_page") }}");
+                    }
+                    var responseMsg = document.getElementById('responseMsg');
+                    responseMsg.innerHTML = response['response'];
+                    responseMsg.style.display = "block";
+                    getAllUsers();
+                    setTimeout(function(){responseMsg.style.display = "none"},3000)
+                },
+                error: function(){
+                    window.location.replace("{{ path("main_page") }}");
+                },
+                dataType: "json",
+                contentType : "application/json"
+            });
+        }
+
+    </script>
+{% endblock %}
