@@ -55,7 +55,7 @@ class UserService{
             ->getArrayResult();
 
         if($loggedUser !== []){
-            if(password_verify($loginData->getLogin(), $loggedUser[0]['password']))
+            if(password_verify($loginData->getPassword(), $loggedUser[0]['password']))
             if($loggedUser[0]['isActive'] === 0)
                 return 0;
 
