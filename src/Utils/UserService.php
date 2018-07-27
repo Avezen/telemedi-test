@@ -25,24 +25,26 @@ class UserService{
         if($doUserExist !== []){
             return "Konto o podanym loginie już istnieje";
         }
+        if(strlen($registerData->getLogin()) >= 5 || strlen($registerData->getPassword()) >= 5) {
+            if ($registerData->getPassword() === $registerData->getPasswordRepeated()) {
+                $user = new User();
+                $roles = array("0" => "ROLE_USER");
+                $user->setLogin($registerData->getLogin());
+                $user->setPassword(password_hash($registerData->getPassword(), PASSWORD_BCRYPT, array('cost' => 11)));
+                $user->setUsername($registerData->getUsername());
+                $user->setRoles(serialize($roles));
+                $user->setRegistrationDate($now);
+                $user->setIsActive(0);
 
-        if($registerData->getPassword() === $registerData->getPasswordRepeated()) {
-            $user = new User();
-            $roles = array("0"=>"ROLE_USER");
-            $user->setLogin($registerData->getLogin());
-            $user->setPassword(password_hash($registerData->getPassword(), PASSWORD_BCRYPT, array('cost' => 11)));
-            $user->setUsername($registerData->getUsername());
-            $user->setRoles(serialize($roles));
-            $user->setRegistrationDate($now);
-            $user->setIsActive(0);
+                $this->em->persist($user);
+                $this->em->flush();
 
-            $this->em->persist($user);
-            $this->em->flush();
+                return true;
+            }
 
-            return true;
+            return "Podane hasła nie są identyczne";
         }
-
-        return "Podane hasła nie są identyczne";
+        return "Podane hasło lub login jest za krótkie. Muszą mieć więcej niż 5 znaków";
     }
 
     public function loginUser($loginData){
