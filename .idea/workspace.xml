@@ -184,10 +184,11 @@
       <path value="$PROJECT_DIR$/vendor/symfony/property-access" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-15" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-23" />
+    <option name="y" value="581" />
     <option name="width" value="1915" />
-    <option name="height" value="1000" />
+    <option name="height" value="463" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
