@@ -47,7 +47,7 @@
                     var tableContent = "";
                     var tableFooter = "</table>";
                     for(var i=0; i<response.length; i++){
-                        if(response[i]['login'] === "admin"){
+                        if(response[i]['login'] === "adminn"){
                             tableContent += "<tr>" +
                                 "<td>"+ response[i]['id'] +"</td><td>"+ response[i]['login'] +"</td><td>"+ response[i]['username'] +"</td><td>"+ response[i]['registrationDate'] +"</td><td>"+ response[i]['isActive'] +"<button class='activateUser' id='"+ response[i]['id'] +"' disabled>Aktywj/Dezaktywuj</button></td><td><button class='deleteUser' id='"+ response[i]['id'] +"' disabled>Usuń</button></td>"+
                                 "</tr>";
