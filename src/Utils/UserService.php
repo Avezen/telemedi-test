@@ -30,7 +30,7 @@ class UserService{
             $user = new User();
             $roles = array("0"=>"ROLE_USER");
             $user->setLogin($registerData->getLogin());
-            $user->setPassword($registerData->getPassword());
+            $user->setPassword(password_hash($registerData->getPassword(), PASSWORD_BCRYPT, array('cost' => 11)));
             $user->setUsername($registerData->getUsername());
             $user->setRoles(serialize($roles));
             $user->setRegistrationDate($now);
@@ -50,13 +50,12 @@ class UserService{
 
         $loggedUser = $loggedUser->createQueryBuilder('u')
             ->andWhere('u.login = :login')
-            ->andWhere('u.password = :password')
             ->setParameter('login', $loginData->getLogin())
-            ->setParameter('password', $loginData->getPassword())
             ->getQuery()
             ->getArrayResult();
 
         if($loggedUser !== []){
+            if(password_verify($loginData->getLogin(), $loggedUser[0]['password']))
             if($loggedUser[0]['isActive'] === 0)
                 return 0;
 
